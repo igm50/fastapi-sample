@@ -1,0 +1,7 @@
+FROM python:3.9.7-alpine
+
+RUN apk update \
+  && apk add gcc musl-dev mariadb-dev \
+  && python -m pip install Django mysqlclient
+
+EXPOSE 8000

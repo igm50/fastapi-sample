@@ -1,0 +1,15 @@
+services:
+  app:
+    build: ./app
+    volumes:
+      - ../src:/usr/app
+    tty: true
+  database:
+    image: mysql:8.0.26
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
