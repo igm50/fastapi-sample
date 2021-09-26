@@ -1,4 +1,5 @@
-from typing import Optional
+from os import name
+from typing import List, Optional
 from MySQLdb.connections import Connection
 import pymysql
 
@@ -6,42 +7,39 @@ from model import City
 
 
 class Database:
-    con: Connection
-
-    def connect(self):
-        self.con = pymysql.connect(
-            host="database", port=3306, db="world", user="root", password="password", charset="utf8")
-
-    def close(self):
-        self.con.close()
+    def __init__(self):
+        self.con = None
 
     def __enter__(self):
-        self.connect()
+        self.con = pymysql.connect(
+            host="database", port=3306, db="world", user="root", password="password", charset="utf8")
         return self
 
     def __exit__(self, exec_type, exec_value, traceback):
-        self.close()
+        self.con.close()
 
-    def read_cities(self, limit: Optional[int]) -> City:
-        with self as db:
-            with db.con.cursor() as cursor:
-                base_sql = "SELECT * FROM `city`"
-                limit_sql = "LIMIT %s"
-                if type(limit) == int:
-                    cursor.execute(base_sql + limit_sql, limit)
-                else:
-                    cursor.execute(base_sql)
-                results = cursor.fetchall()
+    def read_cities(self, limit: Optional[int]) -> List[City]:
+        with self as db, db.con.cursor() as cursor:
+            if type(limit) == int:
+                cursor.execute(self.__select_city__() + "LIMIT %s", limit)
+            else:
+                cursor.execute(self.__select_city__)
+            results = cursor.fetchall()
 
-        return [City(result[0], result[1], result[2], result[3], result[4]) for result in results]
+        return [self.__to_city__(result) for result in results]
 
     def read_city(self, city_id: int) -> City:
-        with self as db:
-            with db.con.cursor() as cursor:
-                sql = "SELECT * FROM `city` WHERE `id` =%s"
-                cursor.execute(sql, city_id)
-                result = cursor.fetchone()
-                city = City(result[0], result[1],
-                            result[2], result[3], result[4])
+        with self as db, db.con.cursor() as cursor:
+            sql = self.__select_city__() + "WHERE `id` =%s"
+            cursor.execute(sql, city_id)
+            result = cursor.fetchone()
 
-        return city
+        return self.__to_city__(result)
+
+    @staticmethod
+    def __select_city__() -> str:
+        return "SELECT `id`, `name`, `country_code`, `district`, `population` FROM `city`"
+
+    @staticmethod
+    def __to_city__(result):
+        return City(id=result[0], name=result[1], country_code=result[2], district=result[3], population=result[4])
