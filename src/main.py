@@ -26,8 +26,8 @@ class CityOut(BaseModel):
 
 
 @app.get("/city", response_model=List[CityOut])
-def read_city():
-    cities = db.read_cities(10)
+def read_city(limit: int = 10):
+    cities = db.read_cities(limit)
     return CityOut.fromCities(cities)
 
 
