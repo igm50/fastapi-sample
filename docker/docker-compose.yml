@@ -5,6 +5,8 @@ services:
       - ../src:/usr/app
     tty: true
   database:
+    # 下記URLから world データベースの SQL を取得して docker/database/world.sql に格納する
+    # https://dev.mysql.com/doc/index-other.html
     image: mysql:8.0.26
     volumes:
       - ./database:/docker-entrypoint-initdb.d

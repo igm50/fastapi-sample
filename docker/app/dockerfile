@@ -1,7 +1,5 @@
 FROM python:3.9.7-alpine
 
-RUN apk update \
-  && apk add gcc musl-dev mariadb-dev \
-  && pip install autopep8 mysqlclient fastapi uvicorn[standard]
+RUN pip install autopep8 fastapi uvicorn[standard] pymysql
 
 EXPOSE 8000
