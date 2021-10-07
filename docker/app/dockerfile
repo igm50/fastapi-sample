@@ -1,5 +1,7 @@
 FROM python:3.9.7-alpine
 
-RUN pip install autopep8 fastapi uvicorn[standard] pymysql
+RUN apk update \
+  && apk add build-base mariadb-dev libressl-dev musl-dev libffi-dev \
+  && pip install autopep8 fastapi uvicorn[standard] pymysql mysqlclient cryptography
 
 EXPOSE 8000

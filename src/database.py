@@ -38,7 +38,7 @@ class Database:
 
     @staticmethod
     def __select_city__() -> str:
-        return "SELECT `id`, `name`, `country_code`, `district`, `population` FROM `city`"
+        return "SELECT `id`, `name`, `countryCode`, `district`, `population` FROM `city`"
 
     @staticmethod
     def __to_city__(result):
